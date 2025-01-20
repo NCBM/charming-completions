@@ -1,6 +1,6 @@
 # Charming Completions
 
-This is the README for your extension "charming-snippets". After writing up a brief description, we recommend including the following sections.
+This extension provides extra completion support for Python in VSCode.
 
 ## Features
 
