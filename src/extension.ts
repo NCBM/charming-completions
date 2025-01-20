@@ -1,13 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { DotCompletionProvider } from './dotcompletion';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	let channel = vscode.window.createOutputChannel("Charming Snippets", { log: true });
+	let channel = vscode.window.createOutputChannel("Charming Completions", { log: true });
 	// channel.show();
-	channel.info('Congratulations, your extension "charming-snippets" is now active!');
+	channel.info('"charming-completions" is now active!');
 
 	// // The command has been defined in the package.json file
 	// // Now provide the implementation of the command with registerCommand
@@ -20,20 +21,27 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// context.subscriptions.push(testDisposable);// Register a command that triggers the smart completion
 
-	const dotCompletion = vscode.languages.registerCompletionItemProvider("python", {
-		provideCompletionItems(document, position) {
-			const target = document.lineAt(position).text.slice(0, position.character - 1);
+	// const dotCompletion = vscode.languages.registerCompletionItemProvider("python", {
+	// 	provideCompletionItems(document, position) {
+	// 		const target = document.lineAt(position).text.slice(0, position.character - 1);
 
-			let dotPrint = new vscode.CompletionItem("print", vscode.CompletionItemKind.Text);
-			dotPrint.detail = `print(${target})`;
-			dotPrint.documentation = new vscode.MarkdownString('Inserts a print statement with the object or variable before the cursor.');
-			let start = new vscode.Position(position.line, document.lineAt(position).firstNonWhitespaceCharacterIndex);
-			dotPrint.insertText = "";
-			let edit = new vscode.TextEdit(new vscode.Range(start, position), `print(${target})`);
-			dotPrint.additionalTextEdits = [edit];
-			return [dotPrint];
-		}
-	}, ".");
+	// 		let dotPrint = new vscode.CompletionItem("print", vscode.CompletionItemKind.Text);
+	// 		dotPrint.detail = `print(${target})`;
+	// 		dotPrint.documentation = new vscode.MarkdownString('Inserts a print statement with the object or variable before the cursor.');
+	// 		let start = new vscode.Position(position.line, document.lineAt(position).firstNonWhitespaceCharacterIndex);
+	// 		dotPrint.insertText = "";
+	// 		let edit = new vscode.TextEdit(new vscode.Range(start, position), `print(${target})`);
+	// 		dotPrint.additionalTextEdits = [edit];
+	// 		return [dotPrint];
+	// 	}
+	// }, ".");
+
+	const dotProvider = new DotCompletionProvider();
+
+	dotProvider.addCompletionName("print");
+	dotProvider.addCompletionName("repr");
+
+	const dotCompletion = dotProvider.makeCompletionProvider();
 
     context.subscriptions.push(dotCompletion);
 }
