@@ -14,6 +14,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	dotProvider.addCompletionName("print");
 	dotProvider.addCompletionName("repr");
+	dotProvider.addCompletionName("str");
+	dotProvider.addCompletionName("int");
+	dotProvider.addCompletionName("float");
+	dotProvider.addCompletionName("bool");
+	dotProvider.addCompletionName("type");
+	dotProvider.addCompletionName("list");
 
 	const dotCompletion = dotProvider.makeCompletionProvider();
 
