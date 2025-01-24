@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { DotCompletionProvider } from './dotcompletion';
 import { log } from './logoutput';
+import { makeReExport } from './reexport';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -28,8 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
 	dotProvider.addCompletionName("list");
 
 	const dotCompletion = dotProvider.makeCompletionProvider();
+	const reExportCompletion = makeReExport();
 
-    context.subscriptions.push(dotCompletion);
+    context.subscriptions.push(dotCompletion, reExportCompletion);
 
 	log.info('"Charming Completions" is now active!');
 }
