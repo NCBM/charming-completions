@@ -14,6 +14,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	dotProvider.addCompletionName("print");
 	dotProvider.addCompletionName("repr");
+	dotProvider.addCompletionName("id");
+	dotProvider.addCompletionName("hash");
+	dotProvider.addCompletionName("len");
+	dotProvider.addCompletionName("abs");
+	dotProvider.addCompletionName("sum");
+	dotProvider.addCompletionName("round");
 	dotProvider.addCompletionName("str");
 	dotProvider.addCompletionName("int");
 	dotProvider.addCompletionName("float");
