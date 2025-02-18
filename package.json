@@ -2,13 +2,27 @@
   "name": "charming-completions",
   "displayName": "Charming Completions",
   "description": "Better completions for Python",
+  "publisher": "NCBM",
   "version": "0.0.1",
+  "license": "MIT",
+  "icon": "res/charming-completions.png",
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.74.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages",
+    "Snippets"
   ],
+  "keywords": [
+    "python",
+    "completion",
+    "snippet"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NCBM/charming-completions.git"
+  },
+  "preview": true,
   "activationEvents": [
     "onLanguage:python"
   ],
@@ -30,7 +44,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
-    "@types/vscode": "^1.96.0",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
     "@vscode/test-cli": "^0.0.10",
