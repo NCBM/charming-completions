@@ -13,20 +13,27 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const dotProvider = new DotCompletionProvider();
 
-	dotProvider.addCompletionName("print");
-	dotProvider.addCompletionName("repr");
-	dotProvider.addCompletionName("id");
-	dotProvider.addCompletionName("hash");
-	dotProvider.addCompletionName("len");
-	dotProvider.addCompletionName("abs");
-	dotProvider.addCompletionName("sum");
-	dotProvider.addCompletionName("round");
-	dotProvider.addCompletionName("str");
-	dotProvider.addCompletionName("int");
-	dotProvider.addCompletionName("float");
-	dotProvider.addCompletionName("bool");
-	dotProvider.addCompletionName("type");
-	dotProvider.addCompletionName("list");
+	dotProvider.addFunctionCompletionName("print");
+	dotProvider.addFunctionCompletionName("repr");
+	dotProvider.addFunctionCompletionName("id");
+	dotProvider.addFunctionCompletionName("hash");
+	dotProvider.addFunctionCompletionName("len");
+	dotProvider.addFunctionCompletionName("abs");
+	dotProvider.addFunctionCompletionName("sum");
+	dotProvider.addFunctionCompletionName("round");
+	dotProvider.addFunctionCompletionName("str");
+	dotProvider.addFunctionCompletionName("int");
+	dotProvider.addFunctionCompletionName("float");
+	dotProvider.addFunctionCompletionName("bool");
+	dotProvider.addFunctionCompletionName("type");
+	dotProvider.addFunctionCompletionName("list");
+
+	dotProvider.addKeywordCompletionName("assert");
+	dotProvider.addKeywordCompletionName("await");
+	dotProvider.addKeywordCompletionName("del");
+	dotProvider.addKeywordCompletionName("raise");
+	dotProvider.addKeywordCompletionName("return");
+	dotProvider.addKeywordCompletionName("yield");
 
 	const dotCompletion = dotProvider.makeCompletionProvider();
 	const reExportCompletion = makeReExport();

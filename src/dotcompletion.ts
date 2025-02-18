@@ -2,7 +2,7 @@ import assert from 'assert';
 import * as vscode from 'vscode';
 import { log } from './logoutput';
 
-const simpleExprRegExp = /([FfRrBbUu]?\"(\\\"|[^\"])*\"|\'(\\\'|[^\'])*\')(\s*\\?\s*[FfRrBbUu]?\"(\\\"|[^\"])*\"|\'(\\\'|[^\'])*\')*|\d*(_?\d+)*\.?\d+(_?\d+)*([eE][+-]?\d+(_?\d+)*)?\b|0([Bb][01]+(_?[01]+)*|[Oo][0-7]+(_?[0-7]+)*|[Xx][0-9A-Fa-f]+(_?[0-9A-Fa-f]+)*)|[a-zA-Z_]\w*(\.[a-zA-Z_]\w*)*/gm;
+const simpleExprRegExp = /([FfRrBbUu]?\"(\\\"|[^\"])*\"|\'(\\\'|[^\'])*\')(\s*\\?\s*[FfRrBbUu]?\"(\\\"|[^\"])*\"|\'(\\\'|[^\'])*\')*|\d*(_?\d+)*\.?\d+(_?\d+)*([eE][+-]?\d+(_?\d+)*)?\b|0([Bb][01]+(_?[01]+)*|[Oo][0-7]+(_?[0-7]+)*|[Xx][0-9A-Fa-f]+(_?[0-9A-Fa-f]+)*)|([a-zA-Z_]\w*)(\.[a-zA-Z_]\w*)*/gm;
 
 function countPrecedingBackslashes(str: string, charIndex: number): number {
     // If the character index is out of bounds or negative, return 0.
@@ -113,28 +113,54 @@ function getExpressionRange(document: vscode.TextDocument, position: vscode.Posi
 }
 
 export class DotCompletionProvider {
-    dotCompletionNames: vscode.CompletionItem[];
+    dotFunctionCompletionNames: vscode.CompletionItem[];
+    dotKeywordCompletionNames: vscode.CompletionItem[];
 
-    addCompletionName(name: string) {
+    addFunctionCompletionName(name: string) {
         let completion = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
         completion.documentation = new vscode.MarkdownString(`Inserts a ${name} statement with the object or variable before the cursor.`);
         completion.insertText = "";
-        this.dotCompletionNames.push(completion);
+        this.dotFunctionCompletionNames.push(completion);
+    }
+
+    addKeywordCompletionName(name: string) {
+        let completion = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
+        completion.documentation = new vscode.MarkdownString(`Inserts a ${name} statement with the object or variable before the cursor.`);
+        completion.insertText = "";
+        this.dotKeywordCompletionNames.push(completion);
     }
 
     makeCompletionProvider() {
-        let compnames = this.dotCompletionNames;
+        let fncompnames = this.dotFunctionCompletionNames;
+        let kwcompnames = this.dotKeywordCompletionNames;
         return vscode.languages.registerCompletionItemProvider("python", {
             provideCompletionItems(document, position) {
+                let _range;
+                if ((_range = document.getWordRangeAtPosition(position)) !== undefined) {
+                    position = _range.start;
+                }
                 let range = getExpressionRange(document, position);
+                while (range.with(getExpressionRange(document, position).start) !== range) {
+                    range = range.with(getExpressionRange(document, position).start);
+                }
                 log.debug(`${range.start.line} ${range.start.character} ${range.end.line} ${range.end.character}`);
                 const target = document.getText(range);
 
-                for (let i = 0; i < compnames.length; i++) {
-                    compnames[i].detail = `${compnames[i].label}(${target})`;
+                let compnames: vscode.CompletionItem[] = [];
+
+                for (let i = 0; i < fncompnames.length; i++) {
+                    fncompnames[i].detail = `${fncompnames[i].label}(${target})`;
                     // let start = new vscode.Position(position.line, document.lineAt(position).firstNonWhitespaceCharacterIndex);
-                    let edit = new vscode.TextEdit(range.with({ end: position }), `${compnames[i].label}(${target})`);
-                    compnames[i].additionalTextEdits = [edit];
+                    let edit = new vscode.TextEdit(range.with({ end: position }), `${fncompnames[i].label}(${target})`);
+                    fncompnames[i].additionalTextEdits = [edit];
+                    compnames.push(fncompnames[i]);
+                }
+
+                for (let i = 0; i < kwcompnames.length; i++) {
+                    kwcompnames[i].detail = `${kwcompnames[i].label} ${target}`;
+                    let edit = new vscode.TextEdit(range.with({ end: position }), `${kwcompnames[i].label} ${target}`);
+                    kwcompnames[i].additionalTextEdits = [edit];
+                    compnames.push(kwcompnames[i]);
                 }
 
                 return compnames;
@@ -143,6 +169,7 @@ export class DotCompletionProvider {
     }
 
     constructor() {
-        this.dotCompletionNames = [];
+        this.dotFunctionCompletionNames = [];
+        this.dotKeywordCompletionNames = [];
     }
 };
