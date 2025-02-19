@@ -27,6 +27,7 @@
     "onLanguage:python"
   ],
   "main": "./dist/extension.js",
+  "browser": "./dist/extension-web.js",
   "contributes": {
     "commands": []
   },
@@ -56,5 +57,7 @@
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "assert": "^2.1.0"
+  }
 }
