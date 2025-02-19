@@ -3,6 +3,11 @@ import * as vscode from 'vscode';
 import { log } from './logoutput';
 
 const simpleExprRegExp = /([FfRrBbUu]?\"(\\\"|[^\"])*\"|\'(\\\'|[^\'])*\')(\s*\\?\s*[FfRrBbUu]?\"(\\\"|[^\"])*\"|\'(\\\'|[^\'])*\')*|\d*(_?\d+)*\.?\d+(_?\d+)*([eE][+-]?\d+(_?\d+)*)?\b|0([Bb][01]+(_?[01]+)*|[Oo][0-7]+(_?[0-7]+)*|[Xx][0-9A-Fa-f]+(_?[0-9A-Fa-f]+)*)|([a-zA-Z_]\w*)(\.[a-zA-Z_]\w*)*/gm;
+const pythonKeywords = [
+    "and", "as", "assert", "async", "await", "break", "class", "continue", "def", "del", "elif", "else", "except",
+    "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "nonlocal", "not", "or", "pass",
+    "raise", "return", "try", "while", "with", "yield"
+];
 
 function countPrecedingBackslashes(str: string, charIndex: number): number {
     // If the character index is out of bounds or negative, return 0.
@@ -58,7 +63,8 @@ function getExpressionRange(document: vscode.TextDocument, position: vscode.Posi
     let lastBrace = lastText.lastIndexOf("}");
 
     if (lastParen !== -1 || lastBrket !== -1 || lastBrace !== -1) {
-        let lastCh = (lastParen < lastBrket) ? ((lastBrket < lastBrace) ? lastBrace : lastBrket) : ((lastParen < lastBrace) ? lastBrace : lastParen);
+        let lastCh = (lastParen > lastBrket) ? (lastParen) : (lastBrket);
+        lastCh = (lastCh > lastBrace) ? (lastCh) : (lastBrace);
         lastText = lastText.slice(0, lastCh + 1);
         block: for (let line = position.line; line >= 0; line--) {
             let inString: "\"" | "'" | null = null;
@@ -118,14 +124,14 @@ export class DotCompletionProvider {
 
     addFunctionCompletionName(name: string) {
         let completion = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
-        completion.documentation = new vscode.MarkdownString(`Inserts a ${name} statement with the object or variable before the cursor.`);
+        completion.documentation = new vscode.MarkdownString(`Inserts a \`${name}(...)\` statement with the object or variable before the cursor.`);
         completion.insertText = "";
         this.dotFunctionCompletionNames.push(completion);
     }
 
     addKeywordCompletionName(name: string) {
         let completion = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
-        completion.documentation = new vscode.MarkdownString(`Inserts a ${name} statement with the object or variable before the cursor.`);
+        completion.documentation = new vscode.MarkdownString(`Inserts a \`${name} ...\` statement with the object or variable before the cursor.`);
         completion.insertText = "";
         this.dotKeywordCompletionNames.push(completion);
     }
@@ -145,25 +151,59 @@ export class DotCompletionProvider {
                 }
                 log.debug(`${range.start.line} ${range.start.character} ${range.end.line} ${range.end.character}`);
                 const target = document.getText(range);
+                if (pythonKeywords.includes(target.trim())) {
+                    return null;
+                }
 
-                let compnames: vscode.CompletionItem[] = [];
+                let compitems: vscode.CompletionItem[] = [];
 
                 for (let i = 0; i < fncompnames.length; i++) {
                     fncompnames[i].detail = `${fncompnames[i].label}(${target})`;
-                    // let start = new vscode.Position(position.line, document.lineAt(position).firstNonWhitespaceCharacterIndex);
                     let edit = new vscode.TextEdit(range.with({ end: position }), `${fncompnames[i].label}(${target})`);
                     fncompnames[i].additionalTextEdits = [edit];
-                    compnames.push(fncompnames[i]);
+                    compitems.push(fncompnames[i]);
                 }
 
                 for (let i = 0; i < kwcompnames.length; i++) {
                     kwcompnames[i].detail = `${kwcompnames[i].label} ${target}`;
                     let edit = new vscode.TextEdit(range.with({ end: position }), `${kwcompnames[i].label} ${target}`);
                     kwcompnames[i].additionalTextEdits = [edit];
-                    compnames.push(kwcompnames[i]);
+                    compitems.push(kwcompnames[i]);
                 }
 
-                return compnames;
+                let foreachCompletion = new vscode.CompletionItem("foreach", vscode.CompletionItemKind.Snippet);
+                foreachCompletion.insertText = new vscode.SnippetString("for ${1:i} in " + target + ":$0");
+                foreachCompletion.documentation = new vscode.MarkdownString(`Inserts a \`for i in ...:\` statement with the object or variable before the cursor.`);
+                foreachCompletion.detail = `for i in ${target}:`;
+                let foreachCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
+                foreachCompletion.additionalTextEdits = [foreachCompletionEdit];
+                compitems.push(foreachCompletion);
+
+                let foriCompletion = new vscode.CompletionItem("fori", vscode.CompletionItemKind.Snippet);
+                foriCompletion.insertText = new vscode.SnippetString("for ${1:i}, ${2:elem} in enumerate(" + target + "):$0");
+                foriCompletion.documentation = new vscode.MarkdownString(`Inserts a \`for i, elem in enumerate(...):\` statement with the object or variable before the cursor.`);
+                foriCompletion.detail = `for i, elem in ${target}:`;
+                let foriCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
+                foriCompletion.additionalTextEdits = [foriCompletionEdit];
+                compitems.push(foriCompletion);
+
+                let aforeachCompletion = new vscode.CompletionItem("aforeach", vscode.CompletionItemKind.Snippet);
+                aforeachCompletion.insertText = new vscode.SnippetString("async for ${1:i} in " + target + ":$0");
+                aforeachCompletion.documentation = new vscode.MarkdownString(`Inserts a \`async for i in ...:\` statement with the object or variable before the cursor.`);
+                aforeachCompletion.detail = `async for i in ${target}:`;
+                let aforeachCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
+                aforeachCompletion.additionalTextEdits = [aforeachCompletionEdit];
+                compitems.push(aforeachCompletion);
+
+                // let aforiCompletion = new vscode.CompletionItem("afori", vscode.CompletionItemKind.Snippet);
+                // aforiCompletion.insertText = new vscode.SnippetString("for ${1:i}, ${2:elem} in enumerate(" + target + "):$0");
+                // aforiCompletion.documentation = new vscode.MarkdownString(`Inserts a \`for i, elem in enumerate(...):\` statement with the object or variable before the cursor.`);
+                // aforiCompletion.detail = `for i, elem in ${target}:`;
+                // let aforiCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
+                // aforiCompletion.additionalTextEdits = [aforiCompletionEdit];
+                // compitems.push(aforiCompletion);
+
+                return compitems;
             }
         }, ".");
     }
