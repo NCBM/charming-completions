@@ -4,21 +4,22 @@ This extension provides extra completion support for Python in VSCode.
 
 ## Features
 
-W.I.P
+- Supports suffix completions
+- Supports re-export completions
 
 ## Requirements
 
-W.I.P
+- VSCode >= 1.74
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
-* W.I.P
+* No settings available.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+W.I.P
 
 ## Release Notes
 
