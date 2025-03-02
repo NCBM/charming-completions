@@ -1,5 +1,7 @@
+import { log } from "./Logger";
 import path from "path";
 import { Edit, Language, Node, Parser, Point, Tree } from "web-tree-sitter";
+
 
 
 const eqPoint = (p1: Point, p2: Point) => {
@@ -9,7 +11,7 @@ const eqPoint = (p1: Point, p2: Point) => {
 export class TreeSitterDocument {
     private static instance = new TreeSitterDocument();
     private parser: Parser | null = null;
-    
+
     private data: Map<String, Tree> = new Map();
 
     private constructor() {
@@ -18,7 +20,7 @@ export class TreeSitterDocument {
     async initTreeSitter() {
         await Parser.init();
         this.parser = new Parser();
-        const Lang = await Language.load(path.join(__dirname,  "tree-sitter-python.wasm"));
+        const Lang = await Language.load(path.join(__dirname, "tree-sitter-python.wasm"));
         this.parser.setLanguage(Lang);
     }
 
@@ -75,18 +77,18 @@ export class TreeSitterDocument {
             if (node.endPosition.row < endPosition.row || node.startPosition.column > endPosition.column) { continue; }
 
 
-            if (node.grammarType === "expression_statement" && eqPoint(endPosition, node.endPosition)) {
-
-                // console.log(node)
+            if (eqPoint(endPosition, node.endPosition)) {
                 /// get the assignment right side
-
-                if (node.firstNamedChild?.grammarType === "assignment") {
-                    return node.firstNamedChild.lastChild;
+                if (node.grammarType === "expression_statement") {
+                    if (node.firstNamedChild?.grammarType === "assignment") {
+                        return node.firstNamedChild.lastChild;
+                    }
+                    /// get expression node
+                    return node.firstChild;
                 }
-
-                /// get expression node
-                return node.firstChild;
+                return node;
             }
+            // log.trace(`Node ${node.namedChildren}`);
             stack.push(...node.namedChildren.filter((child): child is Node => child !== null));
         }
         return null;
