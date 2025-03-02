@@ -15,6 +15,17 @@ const getBeforeDotPosition = (document: vscode.TextDocument, position: vscode.Po
 };
 
 
+const makeCompletionSnippet = (name: string, snippet: { left: string, right: string }, brief: string, target: string, replaceRange: vscode.Range) => {
+    let completion = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
+    completion.insertText = new vscode.SnippetString(snippet.left + target + snippet.right);
+    completion.documentation = new vscode.MarkdownString(`Inserts a \`${brief}\` statement with the object or variable before the cursor.`);
+    completion.detail = brief;
+    let completionEdit = new vscode.TextEdit(replaceRange, "");
+    completion.additionalTextEdits = [completionEdit];
+    return completion;
+};
+
+
 export class DotCompletionProvider {
     dotFunctionCompletionNames: vscode.CompletionItem[];
     dotKeywordCompletionNames: vscode.CompletionItem[];
@@ -83,37 +94,13 @@ export class DotCompletionProvider {
                     compitems.push(kwcompnames[i]);
                 }
 
-                let foreachCompletion = new vscode.CompletionItem("foreach", vscode.CompletionItemKind.Snippet);
-                foreachCompletion.insertText = new vscode.SnippetString("for ${1:i} in " + target + ":$0");
-                foreachCompletion.documentation = new vscode.MarkdownString(`Inserts a \`for i in ...:\` statement with the object or variable before the cursor.`);
-                foreachCompletion.detail = `for i in ${target}:`;
-                let foreachCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
-                foreachCompletion.additionalTextEdits = [foreachCompletionEdit];
-                compitems.push(foreachCompletion);
+                let foreachCompletion = makeCompletionSnippet("foreach", { left: "for ${1:i} in ", right: ":$0" }, "for i in ...:", target, range.with({ end: position }));
+                let foriCompletion = makeCompletionSnippet("forenum", { left: "for ${1:i}, ${2:elem} in enumerate(", right: "):$0" }, "for i, elem in enumerate(...):", target, range.with({ end: position }));
+                let aforeachCompletion = makeCompletionSnippet("aforeach", { left: "async for ${1:i} in ", right: ":$0" }, "async for i in ...:", target, range.with({ end: position }));
+                let comprehensionCompletion = makeCompletionSnippet("comp", { left: "${2:expr} for ${1:i} in ", right: "$0" }, "expr for i in ...", target, range.with({ end: position }));
+                let asyncComprehensionCompletion = makeCompletionSnippet("acomp", { left: "${2:expr} async for ${1:i} in ", right: "$0" }, "expr async for i in ...", target, range.with({ end: position }));
 
-                let foriCompletion = new vscode.CompletionItem("fori", vscode.CompletionItemKind.Snippet);
-                foriCompletion.insertText = new vscode.SnippetString("for ${1:i}, ${2:elem} in enumerate(" + target + "):$0");
-                foriCompletion.documentation = new vscode.MarkdownString(`Inserts a \`for i, elem in enumerate(...):\` statement with the object or variable before the cursor.`);
-                foriCompletion.detail = `for i, elem in ${target}:`;
-                let foriCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
-                foriCompletion.additionalTextEdits = [foriCompletionEdit];
-                compitems.push(foriCompletion);
-
-                let aforeachCompletion = new vscode.CompletionItem("aforeach", vscode.CompletionItemKind.Snippet);
-                aforeachCompletion.insertText = new vscode.SnippetString("async for ${1:i} in " + target + ":$0");
-                aforeachCompletion.documentation = new vscode.MarkdownString(`Inserts a \`async for i in ...:\` statement with the object or variable before the cursor.`);
-                aforeachCompletion.detail = `async for i in ${target}:`;
-                let aforeachCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
-                aforeachCompletion.additionalTextEdits = [aforeachCompletionEdit];
-                compitems.push(aforeachCompletion);
-
-                // let aforiCompletion = new vscode.CompletionItem("afori", vscode.CompletionItemKind.Snippet);
-                // aforiCompletion.insertText = new vscode.SnippetString("for ${1:i}, ${2:elem} in enumerate(" + target + "):$0");
-                // aforiCompletion.documentation = new vscode.MarkdownString(`Inserts a \`for i, elem in enumerate(...):\` statement with the object or variable before the cursor.`);
-                // aforiCompletion.detail = `for i, elem in ${target}:`;
-                // let aforiCompletionEdit = new vscode.TextEdit(range.with({ end: position }), "");
-                // aforiCompletion.additionalTextEdits = [aforiCompletionEdit];
-                // compitems.push(aforiCompletion);
+                compitems.push(foreachCompletion, foriCompletion, aforeachCompletion, comprehensionCompletion, asyncComprehensionCompletion);
 
                 return compitems;
             }
