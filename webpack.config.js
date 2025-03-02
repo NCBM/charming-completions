@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
@@ -12,7 +13,7 @@ const extensionConfig = {
   target: 'node', // VS Code extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
-  entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
+  entry: './src/Extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
     path: path.resolve(__dirname, 'dist'),
@@ -40,6 +41,16 @@ const extensionConfig = {
       }
     ]
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'src/static/*.wasm',                // 单个文件类型匹配
+          to: '[name][ext]'                    // 保持文件名及扩展
+        }
+      ]
+    })
+  ],
   devtool: 'nosources-source-map',
   infrastructureLogging: {
     level: "log", // enables logging required for problem matchers
@@ -52,7 +63,7 @@ const webExtensionConfig = {
   target: 'webworker', // VS Code extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
-  entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
+  entry: './src/Extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
     path: path.resolve(__dirname, 'dist'),
@@ -72,8 +83,13 @@ const webExtensionConfig = {
       // Webpack 5 no longer polyfills Node.js core modules automatically.
       // see https://webpack.js.org/configuration/resolve/#resolvefallback
       // for the list of Node.js core module polyfills.
-      assert: require.resolve('assert')
+      fs: false,
+      assert: require.resolve('assert'),
+      path: require.resolve("path-browserify")
     }
+  },
+  experiments: {
+    asyncWebAssembly: true,
   },
   module: {
     rules: [
@@ -85,12 +101,29 @@ const webExtensionConfig = {
             loader: 'ts-loader'
           }
         ]
-      }
+      },
+      {
+        test: /\.wasm$/,
+        type: "webassembly/async"
+      },
     ]
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'src/static/*.wasm',                // 单个文件类型匹配
+          to: '[name][ext]'                    // 保持文件名及扩展
+        }
+      ]
+    })
+  ],
   devtool: 'nosources-source-map',
   infrastructureLogging: {
     level: "log", // enables logging required for problem matchers
   },
 };
-module.exports = [ extensionConfig, webExtensionConfig ];
+module.exports = [
+   extensionConfig, webExtensionConfig 
+  
+];
