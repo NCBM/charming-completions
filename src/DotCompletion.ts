@@ -53,9 +53,15 @@ export class DotCompletionProvider {
                 let path = document.uri.toString();
 
                 let pos = getBeforeDotPosition(document, position);
+                let wrange = document.getWordRangeAtPosition(position);
 
                 /// TODO: dynamic update document 
-                dotASTDocument.parse(path, document.getText(new vscode.Range(new vscode.Position(0, 0), pos)));
+                dotASTDocument.parse(path, (
+                    document.getText(new vscode.Range(new vscode.Position(0, 0), pos))
+                    + document.getText(new vscode.Range(
+                        wrange !== undefined ? wrange.end : pos.translate({ characterDelta: 1 }), document.lineAt(document.lineCount - 1).range.end
+                    ))
+                ));
 
                 let node = dotASTDocument.findNodeInEndPosition(path, {
                     row: pos.line,
