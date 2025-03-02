@@ -1,7 +1,6 @@
-import assert from 'assert';
 import * as vscode from 'vscode';
-import { log } from './Logger';
 import { TreeSitterDocument } from './DocumentParser';
+import { log } from './Logger';
 
 
 const getBeforeDotPosition = (document: vscode.TextDocument, position: vscode.Position) => {
@@ -51,19 +50,16 @@ export class DotCompletionProvider {
         let dotASTDocument = this.dotASTDocument;
         return vscode.languages.registerCompletionItemProvider("python", {
             provideCompletionItems(document, position) {
-
                 let path = document.uri.toString();
 
                 let pos = getBeforeDotPosition(document, position);
-                
 
                 /// TODO: dynamic update document 
-                dotASTDocument.parse(path, document.getText(new vscode.Range(new vscode.Position(0, 0), pos))
-                );
-        
+                dotASTDocument.parse(path, document.getText(new vscode.Range(new vscode.Position(0, 0), pos)));
+
                 let node = dotASTDocument.findNodeInEndPosition(path, {
                     row: pos.line,
-                    column: pos.character 
+                    column: pos.character
                 });
 
                 if (node === null) {
