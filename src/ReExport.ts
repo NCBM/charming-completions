@@ -7,13 +7,17 @@ export function makeReExport() {
             if (!document.getText(document.getWordRangeAtPosition(position)).startsWith("a")) {
                 return null;
             }
+            if (document.lineAt(position).text.length < 3) {
+                return null;
+            }
             let idx = document.lineAt(position).text.slice(0, position.character - 2).trimEnd().length;
             let dline;
-            for (dline = 0; idx === 0; dline++) {
-                idx = document.lineAt(position.translate(-dline)).text.slice(0, position.character - 2).trimEnd().length;
+            for (dline = 0; idx === 0 && position.line - dline >= 0; dline++) {
+                log.trace(document.lineAt(position.line - dline).text.trimEnd());
+                idx = document.lineAt(position.line - dline).text.trimEnd().length;
             }
-            let nameRange = document.getWordRangeAtPosition(position.translate(-dline).with({ character: idx }));
-            log.trace(`Name range matched: -${dline} ${idx}`);
+            let nameRange = document.getWordRangeAtPosition(position.translate(-dline).with({ character: idx - 1 }));
+            log.trace(`Name range matched: -${dline} ${idx} => ${position.line - dline} ${idx - 1}`);
             if (nameRange === undefined) {
                 return null;
             }
@@ -22,7 +26,7 @@ export function makeReExport() {
             let item = new vscode.CompletionItem("as", vscode.CompletionItemKind.Snippet);
             item.keepWhitespace = true;
             item.insertText = `as ${name}`;
-            item.detail = `(re-export) ${name}`;
+            item.detail = `(re-export) as ${name}`;
             item.documentation = "A shortcut for re-exporting.";
             return [item];
         },
