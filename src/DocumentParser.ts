@@ -1,8 +1,5 @@
-import { log } from "./Logger";
 import path from "path";
 import { Edit, Language, Node, Parser, Point, Tree } from "web-tree-sitter";
-
-
 
 const eqPoint = (p1: Point, p2: Point) => {
     return p1.column === p2.column && p1.row === p2.row;
@@ -14,13 +11,14 @@ export class TreeSitterDocument {
 
     private data: Map<String, Tree> = new Map();
 
-    private constructor() {
-    }
+    private constructor() {}
 
     async initTreeSitter() {
         await Parser.init();
         this.parser = new Parser();
-        const Lang = await Language.load(path.join(__dirname, "tree-sitter-python.wasm"));
+        const Lang = await Language.load(
+            path.join(__dirname, "tree-sitter-python.wasm")
+        );
         this.parser.setLanguage(Lang);
     }
 
@@ -70,12 +68,18 @@ export class TreeSitterDocument {
         while (stack.length > 0) {
             let node = stack.pop();
 
-            if (node === undefined || node === null) { continue; }
+            if (node === undefined || node === null) {
+                continue;
+            }
 
             // row is greater than the end position
             // column is less than the end position
-            if (node.endPosition.row < endPosition.row || node.startPosition.column > endPosition.column) { continue; }
-
+            if (
+                node.endPosition.row < endPosition.row ||
+                node.startPosition.column > endPosition.column
+            ) {
+                continue;
+            }
 
             if (eqPoint(endPosition, node.endPosition)) {
                 /// get the assignment right side
@@ -86,12 +90,18 @@ export class TreeSitterDocument {
                     /// get expression node
                     return node.firstChild;
                 }
+
+                if (node.grammarType === "keyword_argument") {
+                    return node.lastChild;
+                }
                 return node;
             }
-            // log.trace(`Node ${node.namedChildren}`);
-            stack.push(...node.namedChildren.filter((child): child is Node => child !== null));
+            stack.push(
+                ...node.namedChildren.filter(
+                    (child): child is Node => child !== null
+                )
+            );
         }
         return null;
     };
 }
-
