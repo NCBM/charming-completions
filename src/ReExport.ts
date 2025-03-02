@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { log } from './logoutput';
+import { log } from './Logger';
 
 export function makeReExport() {
     return vscode.languages.registerCompletionItemProvider("python", {
