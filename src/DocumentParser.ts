@@ -1,6 +1,30 @@
 import path from "path";
 import { Edit, Language, Node, Parser, Point, Tree } from "web-tree-sitter";
 
+const acceptedGrammarTypes = [
+    "expression_statement",
+    "keyword_argument",
+    "assignment",
+    "identifier",
+    "string",
+    "integer",
+    "float",
+    "true",
+    "false",
+    "none",
+    "call",
+    "list",
+    "set",
+    "dictionary",
+    "tuple",
+    "subscript",
+    "binary_operator",
+    "unary_operator",
+    "list_comprehension",
+    "dictionary_comprehension",
+    "set_comprehension",
+];
+
 const eqPoint = (p1: Point, p2: Point) => {
     return p1.column === p2.column && p1.row === p2.row;
 };
@@ -81,7 +105,10 @@ export class TreeSitterDocument {
                 continue;
             }
 
-            if (eqPoint(endPosition, node.endPosition)) {
+            if (
+                eqPoint(endPosition, node.endPosition) &&
+                acceptedGrammarTypes.includes(node.grammarType)
+            ) {
                 /// get the assignment right side
                 if (node.grammarType === "expression_statement") {
                     if (node.firstNamedChild?.grammarType === "assignment") {
