@@ -3,7 +3,7 @@
   "displayName": "Charming Completions",
   "description": "Better completions for Python",
   "publisher": "NCBM",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "license": "MIT",
   "icon": "assets/resources/charming-completions.png",
   "engines": {
