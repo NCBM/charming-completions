@@ -20,7 +20,7 @@ Allowing to use some postfix to wrap a value. Inspired from other editors.
 
 #### List of supported functions/keywords
 
-- Functions
+- Functions (`foo.xxx => xxx(foo)`)
     - `print`
     - `repr`
     - `id`
@@ -35,13 +35,19 @@ Allowing to use some postfix to wrap a value. Inspired from other editors.
     - `bool`
     - `type`
     - `list`
-- Keywords
+- Keywords (`foo.xxx => xxx foo`)
     - `assert`
     - `await`
     - `del`
     - `raise`
     - `return`
     - `yield`
+- Others
+    - `foreach => for i in ...:`
+    - `forenum => for i, elem in enumerate(...):`
+    - `aforeach => async for i in ...:`
+    - `comp => expr for i in ...`
+    - `acomp => expr async for i in ...`
 
 ### Re-export completions
 
