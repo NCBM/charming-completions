@@ -124,6 +124,5 @@ const webExtensionConfig = {
   },
 };
 module.exports = [
-   extensionConfig, webExtensionConfig 
-  
+  extensionConfig, webExtensionConfig 
 ];
