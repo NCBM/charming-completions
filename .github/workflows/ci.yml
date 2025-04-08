@@ -24,7 +24,9 @@ jobs:
       - name: Install git-cliff
         uses: taiki-e/install-action@git-cliff
       - name: Generate changelog
-        run: git-cliff -l > changelog-latest.md
+        run: |
+          git-cliff -l > changelog-latest.md
+          git-cliff > CHANGELOG.md
       - name: Build VSIX
         run: yarn  # install project
       - name: Publish to Open VSX Registry
