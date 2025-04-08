@@ -93,7 +93,8 @@ export class DotCompletionProvider {
 
                 for (let i = 0; i < fncompnames.length; i++) {
                     fncompnames[i].detail = `${fncompnames[i].label}(${target})`;
-                    let edit = new vscode.TextEdit(range.with({ end: position }), `${fncompnames[i].label}(${target})`);
+                    fncompnames[i].insertText = new vscode.SnippetString(`${fncompnames[i].label}(${target}$1)$0`);
+                    let edit = new vscode.TextEdit(range.with({ end: position }), "");
                     fncompnames[i].additionalTextEdits = [edit];
                     compitems.push(fncompnames[i]);
                 }
@@ -107,7 +108,7 @@ export class DotCompletionProvider {
 
                 for (let i = 0; i < mvfncompnames.length; i++) {
                     mvfncompnames[i].detail = `${mvfncompnames[i].label}(${target})`;
-                    mvfncompnames[i].insertText = new vscode.SnippetString(`${mvfncompnames[i].label}(${target}$1)$0`);
+                    mvfncompnames[i].insertText = new vscode.SnippetString(`${mvfncompnames[i].label}(${target}, $1)$0`);
                     let edit = new vscode.TextEdit(range.with({ end: position }), "");
                     mvfncompnames[i].additionalTextEdits = [edit];
                     compitems.push(mvfncompnames[i]);
