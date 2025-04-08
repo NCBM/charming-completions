@@ -29,7 +29,13 @@
   "main": "./dist/extension.js",
   "browser": "./dist/extension-web.js",
   "contributes": {
-    "commands": []
+    "commands": [],
+    "snippets": [
+      {
+        "language": "python",
+        "path": "./snippets/simple-snippet.json"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",

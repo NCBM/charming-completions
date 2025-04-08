@@ -1,0 +1,47 @@
+{
+    "Function": {
+        "prefix": "def",
+        "body": ["def ${1:func_name}(${2:*args, **kwds})$0"],
+        "description": "A snippet for `def`"
+    },
+    "Loop": {
+        "prefix": "for",
+        "body": ["for ${1:i} in ${2:it}$0"],
+        "description": "A snippet for `for`"
+    },
+    "Context": {
+        "prefix": "with",
+        "body": ["with ${1:context}$0"],
+        "description": "A snippet for `with`"
+    },
+    "Async function": {
+        "prefix": "adef",
+        "body": ["async def ${1:func_name}(${2:*args, **kwds})$0"],
+        "description": "A shortcut for `async def`"
+    },
+    "Async loop": {
+        "prefix": "afor",
+        "body": ["async for ${1:i} in ${2:ait}$0"],
+        "description": "A shortcut for `async for`"
+    },
+    "Async context": {
+        "prefix": "awith",
+        "body": ["async with ${1:context}$0"],
+        "description": "A shortcut for `async with`"
+    },
+    "Pattern matching": {
+        "prefix": "match",
+        "body": ["match ${1:obj}:", "\t$0"],
+        "description": "A snippet for `match`"
+    },
+    "Pattern matching case": {
+        "prefix": "case",
+        "body": ["case ${1:obj}$0"],
+        "description": "A snippet for `match`"
+    },
+    "Pattern matching default": {
+        "prefix": "default",
+        "body": ["case ${1:_}:", "\t$0"],
+        "description": "A snippet for `match`"
+    }
+}
