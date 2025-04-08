@@ -28,6 +28,7 @@ const makeCompletionSnippet = (name: string, snippet: { left: string, right: str
 export class DotCompletionProvider {
     dotFunctionCompletionNames: vscode.CompletionItem[];
     dotKeywordCompletionNames: vscode.CompletionItem[];
+    dotMultiValueFunctionCompletionNames: vscode.CompletionItem[];
     dotASTDocument: TreeSitterDocument = TreeSitterDocument.getInstance();
 
     addFunctionCompletionName(name: string) {
@@ -44,9 +45,17 @@ export class DotCompletionProvider {
         this.dotKeywordCompletionNames.push(completion);
     }
 
+    addMultiValueFunctionCompletionName(name: string) {
+        let completion = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
+        completion.documentation = new vscode.MarkdownString(`Inserts a \`${name}(...)\` statement with the object or variable before the cursor.`);
+        completion.insertText = "";
+        this.dotMultiValueFunctionCompletionNames.push(completion);
+    }
+
     makeCompletionProvider() {
         let fncompnames = this.dotFunctionCompletionNames;
         let kwcompnames = this.dotKeywordCompletionNames;
+        let mvfncompnames = this.dotMultiValueFunctionCompletionNames;
         let dotASTDocument = this.dotASTDocument;
         return vscode.languages.registerCompletionItemProvider("python", {
             provideCompletionItems(document, position) {
@@ -96,6 +105,14 @@ export class DotCompletionProvider {
                     compitems.push(kwcompnames[i]);
                 }
 
+                for (let i = 0; i < mvfncompnames.length; i++) {
+                    mvfncompnames[i].detail = `${mvfncompnames[i].label}(${target})`;
+                    mvfncompnames[i].insertText = new vscode.SnippetString(`${mvfncompnames[i].label}(${target}$1)$0`);
+                    let edit = new vscode.TextEdit(range.with({ end: position }), "");
+                    mvfncompnames[i].additionalTextEdits = [edit];
+                    compitems.push(mvfncompnames[i]);
+                }
+
                 let foreachCompletion = makeCompletionSnippet("foreach", { left: "for ${1:i} in ", right: ":$0" }, "for i in ...:", target, range.with({ end: position }));
                 let foriCompletion = makeCompletionSnippet("forenum", { left: "for ${1:i}, ${2:elem} in enumerate(", right: "):$0" }, "for i, elem in enumerate(...):", target, range.with({ end: position }));
                 let aforeachCompletion = makeCompletionSnippet("aforeach", { left: "async for ${1:i} in ", right: ":$0" }, "async for i in ...:", target, range.with({ end: position }));
@@ -112,5 +129,6 @@ export class DotCompletionProvider {
     constructor() {
         this.dotFunctionCompletionNames = [];
         this.dotKeywordCompletionNames = [];
+        this.dotMultiValueFunctionCompletionNames = [];
     }
 };
