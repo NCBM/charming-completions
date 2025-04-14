@@ -9,7 +9,7 @@ import { makeReExport } from './ReExport';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-	await TreeSitterDocument.getInstance().initTreeSitter();
+	await TreeSitterDocument.getInstance().initTreeSitter(context);
 
 	const dotProvider = new DotCompletionProvider();
 
