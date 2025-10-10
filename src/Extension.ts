@@ -15,10 +15,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const dotFunctionCompletionNames = [
 		"print", "repr", "id", "hash", "len", "abs", "sum", "round", "str", "int", "float", "bool", "type",
-		"list", "tuple", "reversed", "set"
+		"list", "tuple", "reversed", "set", "enumerate", "iter", "next", "aiter", "anext", "callable", "chr",
+		"ord", "dir", "min", "max", "vars"
 	];
 	const dotKeywordCompletionNames = ["assert", "await", "del", "raise", "return", "yield"];
-	const dotMultiValueFunctionCompletionNames = ["isinstance", "issubclass", "enumerate"];
+	const dotMultiValueFunctionCompletionNames = [
+		"isinstance", "issubclass", "zip", "getattr", "hasattr", "setattr", "delattr", "divmod", "pow"
+	];
 	dotFunctionCompletionNames.forEach((value) => { dotProvider.addFunctionCompletionName(value); });
 	dotKeywordCompletionNames.forEach((value) => { dotProvider.addKeywordCompletionName(value); });
 	dotMultiValueFunctionCompletionNames.forEach((value) => { dotProvider.addMultiValueFunctionCompletionName(value); });

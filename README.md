@@ -22,26 +22,14 @@ Allowing to use some postfix to wrap a value. Inspired from other editors.
 
 - Functions (`foo.xxx => xxx(foo)`)
 
-  - `print`
-  - `repr`
-  - `id`
-  - `hash`
-  - `len`
-  - `abs`
-  - `sum`
-  - `round`
-  - `str`
-  - `int`
-  - `float`
-  - `bool`
-  - `type`
-  - `list`
-  - `tuple`
-  - `reversed`
-  - `set`
-  - `isinstance`
-  - `issubclass`
-  - `enumerate`
+  |       -       |       -       |     -     |      -      |      -      |      -      |      -      |      -      |
+  | :------------: | :------------: | :-------: | :---------: | :---------: | :---------: | :----------: | :----------: |
+  |   `print`   |    `repr`    |  `id`  |  `hash`  |   `len`   |   `abs`   |   `sum`   |  `round`  |
+  |    `str`    |    `int`    | `float` |  `bool`  |  `type`  |  `list`  |  `tuple`  | `reversed` |
+  |    `set`    | `enumerate` | `iter` |  `next`  |  `aiter`  |  `anext`  | `callable` |   `chr`   |
+  |    `ord`    |    `dir`    |  `min`  |   `max`   |  `vars`  |            |              |              |
+  | `isinstance` | `issubclass` |  `zip`  | `getattr` | `hasattr` | `setattr` | `delattr` |  `divmod`  |
+  |    `pow`    |                |          |            |            |            |              |              |
 - Keywords (`foo.xxx => xxx foo`)
 
   - `assert`
