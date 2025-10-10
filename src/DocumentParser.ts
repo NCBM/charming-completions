@@ -1,7 +1,5 @@
-import path from "path";
 import * as vscode from "vscode";
 import { Edit, Language, Node, Parser, Point, Tree } from "web-tree-sitter";
-import { log } from "./Logger";
 
 const acceptedGrammarTypes = [
     "expression_statement",
@@ -42,17 +40,12 @@ export class TreeSitterDocument {
     async initTreeSitter(context: vscode.ExtensionContext) {
         // await Parser.init();
         await Parser.init({
-            locateFile: (path: string) => {
-                log.info(`WASM URI: ${vscode.Uri.joinPath(context.extensionUri, "dist", path).toString()}`);
-                return vscode.Uri.joinPath(context.extensionUri, "dist", path).toString();
-            },
+            wasmBinary: await vscode.workspace.fs.readFile(vscode.Uri.joinPath(context.extensionUri, "dist", "tree-sitter.wasm"))
         } as any as EmscriptenModule);
         this.parser = new Parser();
-        const Lang = await Language.load(
-            path.join(context.extensionPath, "dist", "tree-sitter-python.wasm")
-        );
-        // const wasmUrl = vscode.Uri.joinPath(context.extensionUri, "dist", "tree-sitter-python.wasm").toString();
-        // const Lang = await Language.load(wasmUrl);
+        const wasmUri = vscode.Uri.joinPath(context.extensionUri, "dist", "tree-sitter-python.wasm");
+        const wasmBlob = await vscode.workspace.fs.readFile(wasmUri);
+        const Lang = await Language.load(wasmBlob);
         this.parser.setLanguage(Lang);
     }
 
