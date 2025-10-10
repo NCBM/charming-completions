@@ -22,14 +22,15 @@ Allowing to use some postfix to wrap a value. Inspired from other editors.
 
 - Functions (`foo.xxx => xxx(foo)`)
 
-  |       -       |       -       |     -     |      -      |      -      |      -      |      -      |      -      |
-  | :------------: | :------------: | :-------: | :---------: | :---------: | :---------: | :----------: | :----------: |
-  |   `print`   |    `repr`    |  `id`  |  `hash`  |   `len`   |   `abs`   |   `sum`   |  `round`  |
-  |    `str`    |    `int`    | `float` |  `bool`  |  `type`  |  `list`  |  `tuple`  | `reversed` |
-  |    `set`    | `enumerate` | `iter` |  `next`  |  `aiter`  |  `anext`  | `callable` |   `chr`   |
-  |    `ord`    |    `dir`    |  `min`  |   `max`   |  `vars`  |            |              |              |
-  | `isinstance` | `issubclass` |  `zip`  | `getattr` | `hasattr` | `setattr` | `delattr` |  `divmod`  |
-  |    `pow`    |                |          |            |            |            |              |              |
+  |      -       |      -       |    -    |     -     |     -     |     -     |     -      |     -      |
+  | :----------: | :----------: | :-----: | :-------: | :-------: | :-------: | :--------: | :--------: |
+  |   `print`    |    `repr`    |  `id`   |  `hash`   |   `len`   |   `abs`   |   `sum`    |  `round`   |
+  |    `str`     |    `int`     | `float` |  `bool`   |  `type`   |  `list`   |  `tuple`   | `reversed` |
+  |    `set`     | `enumerate`  | `iter`  |  `next`   |  `aiter`  |  `anext`  | `callable` |   `chr`    |
+  |    `ord`     |    `dir`     |  `min`  |   `max`   |  `vars`   |           |            |            |
+  | `isinstance` | `issubclass` |  `zip`  | `getattr` | `hasattr` | `setattr` | `delattr`  |  `divmod`  |
+  |    `pow`     |              |         |           |           |           |            |            |
+
 - Keywords (`foo.xxx => xxx foo`)
 
   - `assert`
@@ -38,8 +39,10 @@ Allowing to use some postfix to wrap a value. Inspired from other editors.
   - `raise`
   - `return`
   - `yield`
+
 - Others
 
+  - `if __name__ == "__main__": => if __name__ == "__main__": main()`
   - `foreach => for i in ...:`
   - `forenum => for i, elem in enumerate(...):`
   - `aforeach => async for i in ...:`
@@ -66,4 +69,4 @@ Providing a shortcut for re-exporting.
 
 This extension contributes the following settings:
 
-* No settings available.
+- No settings available.

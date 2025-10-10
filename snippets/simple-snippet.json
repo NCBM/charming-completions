@@ -43,5 +43,10 @@
         "prefix": "default",
         "body": ["case ${1:_}:", "\t$0"],
         "description": "A snippet for `match`"
+    },
+    "Main entry": {
+        "prefix": "if __name__ == \"__main__\":",
+        "body": ["if __name__ == \"__main__\":", "\t${0:main($1)}"],
+        "description": "A snippet for __main__ entry"
     }
 }
